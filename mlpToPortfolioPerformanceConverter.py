@@ -5,16 +5,15 @@ Output: A CSV file that can be imported by Portfolio Performance.
 """
 
 import csv
-import re # regular expressions
+import re         # regular expressions
 import fileinput
+import argparse   # command line arguments parser
+import os
+import sys
 
-# Input file to parse
-inputFile    = 'input.csv'
-# Number of lines to skip. The first line after skipping should contain the 
-# column headers aka field names.
-numSkipLines = 12
-# Converted output file
-outputFile   = 'output.csv'
+"""
+Function definitions
+"""
 
 def opening_hook_csv(filename, mode):
 	"""CSV opening hook for the fileinput.input() function.
@@ -26,13 +25,17 @@ def opening_hook_csv(filename, mode):
 	"""
 	return open(filename, mode, newline='', encoding='iso-8859-1')
 
+def printError(text):
+	"""Print a red colored error text to stdout"""
+	print('\033[31m Error: ' + text + '\033[0m')
+
 def printWarning(text):
 	"""Print an orange colored warning text to stdout"""
-	print('\033[33m' + text + '\033[0m')
+	print('\033[33m Warning: ' + text + '\033[0m')
 
 def printSuccess(text):
 	"""Print a green colored success message to stdout"""
-	print('\033[32m' + text + '\033[0m')	
+	print('\033[32m Success: ' + text + '\033[0m')	
 
 def findPieces(transactionText):
 	"""Find the number of traded stock pieces in a transaction text
@@ -134,6 +137,37 @@ def findTaxes(transactionText):
 		soli = float(soliStr.replace(',', '.'))
 
 	return kap + soli
+
+"""
+Main program
+"""
+
+# Define and parse command line arguments
+argParser = argparse.ArgumentParser()
+argParser.add_argument("infile",
+	help="Input CSV file from MLP bank")
+argParser.add_argument("-o", "--outfile",
+	help="Name of the converted ouput CSV file",
+	default="output.csv")
+argParser.add_argument("-s", "--skip-lines",
+	help="Number of header lines to skip in input file",
+	type=int,
+	default=12)
+commandArgs = argParser.parse_args()
+
+# Check wheter input file exists
+inputFile = commandArgs.infile
+if (not os.path.exists(inputFile)):
+	printError("Input file \"" + inputFile + "\" does not exist")
+	sys.exit(1)
+# Number of lines to skip. The first line after skipping should contain the 
+# column headers aka field names.
+numSkipLines = commandArgs.skip_lines
+if (numSkipLines < 0):
+	printError("SKIP_LINES must not be negative. Found: " + str(numSkipLines))
+	sys.exit(1)
+# Name of converted output file
+outputFile = commandArgs.outfile
 
 
 # Open the input file and skip header lines. We use the fileinput module here
@@ -278,7 +312,7 @@ for row in transactionReader:
 		transactionWriter.writerow(outDict)
 		rowCnt += 1
 
-printSuccess("Successfully converted " + str(rowCnt) + " transactions")
+printSuccess("Converted " + str(rowCnt) + " transactions")
 
 # Close the files
 csvInput.close()
