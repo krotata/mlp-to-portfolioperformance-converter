@@ -27,15 +27,19 @@ def opening_hook_csv(filename, mode):
 
 def printError(text):
 	"""Print a red colored error text to stdout"""
-	print('\033[31m Error: ' + text + '\033[0m')
+	print('\033[31mError: ' + text + '\033[0m')
 
 def printWarning(text):
 	"""Print an orange colored warning text to stdout"""
-	print('\033[33m Warning: ' + text + '\033[0m')
+	print('\033[33mWarning: ' + text + '\033[0m')
 
 def printSuccess(text):
 	"""Print a green colored success message to stdout"""
-	print('\033[32m Success: ' + text + '\033[0m')	
+	print('\033[32mSuccess: ' + text + '\033[0m')
+
+def printInfo(text):
+	"""Print an info message to stdout"""
+	print('Info: ' + text)
 
 def findPieces(transactionText):
 	"""Find the number of traded stock pieces in a transaction text
@@ -321,6 +325,7 @@ for row in transactionReader:
 		rowCnt += 1
 
 printSuccess("Converted " + str(rowCnt) + " transactions")
+printInfo("Result written to " + outputFile)
 
 # Close the files
 csvInput.close()
