@@ -252,8 +252,12 @@ for row in transactionReader:
 			outDict['Steuern']        = str(taxes)
 
 	elif(taxRetRe.match(subjectStr) != None):
-		outDict['Typ']   = 'Steuerrückerstattung'
-		outDict['Notiz'] = 'Steuerausgleich'
+		outDict['Typ']            = 'Steuerrückerstattung'
+		outDict['Notiz']          = 'Steuerausgleich'
+		outDict['Stück']          = findPieces(subjectStr)
+		outDict['WKN']            = findWkn(subjectStr)
+		outDict['ISIN']           = findIsin(subjectStr)
+		outDict['Wertpapiername'] = findStockName(subjectStr)
 
 	elif(dividendRe.match(subjectStr) != None):
 		outDict['Typ']   = 'Steuerrückerstattung'
