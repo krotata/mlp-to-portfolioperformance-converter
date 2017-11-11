@@ -147,8 +147,7 @@ argParser = argparse.ArgumentParser()
 argParser.add_argument("infile",
 	help="Input CSV file from MLP bank")
 argParser.add_argument("-o", "--outfile",
-	help="Name of the converted ouput CSV file",
-	default="output.csv")
+	help="Name of the converted ouput CSV file")
 argParser.add_argument("-s", "--skip-lines",
 	help="Number of header lines to skip in input file",
 	type=int,
@@ -167,8 +166,11 @@ if (numSkipLines < 0):
 	printError("SKIP_LINES must not be negative. Found: " + str(numSkipLines))
 	sys.exit(1)
 # Name of converted output file
-outputFile = commandArgs.outfile
-
+if (commandArgs.outfile == None):
+	infileBase, infileExt = os.path.splitext(inputFile)
+	outputFile = infileBase + "_converted" + infileExt
+else:
+	outputFile = commandArgs.outfile
 
 # Open the input file and skip header lines. We use the fileinput module here
 # because it provides a function to get the current line number in the file.
