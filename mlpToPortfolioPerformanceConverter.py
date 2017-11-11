@@ -305,6 +305,12 @@ for row in transactionReader:
 	elif(transRe.match(subjectStr)):
 		outDict['Typ'] = 'Entnahme'
 
+	elif(row['Kundenreferenz'] == 'Anfangssaldo' or
+		row['Kundenreferenz'] == 'Endsaldo'):
+		# We ignore rows containing the opening and end balance as they
+		# cannot imported to PortfolioPerformance in any meaningful way
+		transactionIsValid = False
+
 	else:
 		printWarning("Unknown transaction type in line " + str(csvInput.filelineno()))
 		transactionIsValid = False
