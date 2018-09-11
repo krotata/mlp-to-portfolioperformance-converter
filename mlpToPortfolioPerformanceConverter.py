@@ -140,7 +140,14 @@ def findTaxes(transactionText):
 		soliStr = matches.group(1)
 		soli = float(soliStr.replace(',', '.'))
 
-	return kap + soli
+	kist = 0
+	kistRegex = r'KIST\s+(.*)-'
+	matches = re.search(kistRegex, transactionText)
+	if matches:
+		kistStr = matches.group(1)
+		kist = float(kistStr.replace(',', '.'))
+
+	return kap + soli + kist
 
 """
 Main program
@@ -203,6 +210,7 @@ dividendRe = re.compile(r'EFFEKTENGUTSCHRIFT\nWP-ERTRÄGNISGUTSCHRIFT\nINVESTMEN
 buyRe      = re.compile(r'EFFEKTEN\n')
 collectRe  = re.compile(r'EINZUGSERMAECHTIGUNG\n')
 creditRe   = re.compile(r'GUTSCHRIFT\n')
+kirchTaxRe = re.compile(r'KIRCHENSTEUER\n')
 soliTaxRe  = re.compile(r'SOLIDARITÄTSZUSCHLAG\n')
 kapiTaxRe  = re.compile(r'KAPITALERTRAGSTEUER\n')
 transRe    = re.compile(r'UEBERWEISUNG\n')
@@ -249,7 +257,7 @@ for row in transactionReader:
 			outDict['WKN']            = wkn
 			outDict['ISIN']           = isin
 			outDict['Wertpapiername'] = name
-			outDict['Steuern']        = str(taxes)
+			outDict['Steuern']        = str(taxes).replace('.',',')
 
 	elif(taxRetRe.match(subjectStr) != None):
 		outDict['Typ']            = 'Steuerrückerstattung'
@@ -302,6 +310,10 @@ for row in transactionReader:
 		else:
 			outDict['Notiz'] = 'Unbekannte Gutschrift'
 		
+	elif(kirchTaxRe.match(subjectStr) != None):
+		outDict['Typ']   = 'Steuern'
+		outDict['Notiz'] = 'Kirchensteuer'
+
 	elif(soliTaxRe.match(subjectStr) != None):
 		outDict['Typ']   = 'Steuern'
 		outDict['Notiz'] = 'Solidaritätszuschlag'
