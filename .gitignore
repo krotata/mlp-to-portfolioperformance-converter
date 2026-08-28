@@ -1,1 +1,7 @@
-testData/
+testData
+codebuddy
+.idea
+.vscode
+
+__pycache__
+.embeddings.db
